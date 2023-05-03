@@ -16,7 +16,7 @@ if __name__ == "__main__":
                 f"{CONFIG.TINYZONETV_TVSHOWS_PAGE}?page={i}"
             )
             if not crawled_page and i >= CONFIG.TINYZONETV_TVSHOWS_LAST_PAGE:
-                i = 2
+                i = 1
             else:
                 i += 1
         except Exception as e:

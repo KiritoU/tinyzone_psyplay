@@ -109,48 +109,55 @@ class Crawler:
     def crawl_flw_item(
         self, flw_item: BeautifulSoup, post_type: str = CONFIG.TYPE_TV_SHOWS
     ):
-        film_poster = flw_item.find("div", class_="film-poster")
-        if film_poster:
-            film_poster_quality = film_poster.find("div", class_="film-poster-quality")
-            quality = film_poster_quality.text if film_poster_quality else "HD"
+        try:
+            film_poster = flw_item.find("div", class_="film-poster")
+            if film_poster:
+                film_poster_quality = film_poster.find(
+                    "div", class_="film-poster-quality"
+                )
+                quality = film_poster_quality.text if film_poster_quality else "HD"
 
-            img = film_poster.find("img")
-            cover_src = img.get("data-src") if img else ""
+                img = film_poster.find("img")
+                cover_src = img.get("data-src") if img else ""
 
-            a_element = film_poster.find("a")
-            href = a_element.get("href") if a_element else ""
+                a_element = film_poster.find("a")
+                href = a_element.get("href") if a_element else ""
 
-        film_detail = flw_item.find("div", class_="film-detail")
-        if film_detail:
-            film_name = film_detail.find("h3", class_="film-name")
-            if film_name:
-                if film_name.find("a") and not href:
-                    href = film_name.find("a").get("href")
-                title = film_name.text.strip("\n")
+            film_detail = flw_item.find("div", class_="film-detail")
+            if film_detail:
+                film_name = film_detail.find("h3", class_="film-name")
+                if film_name:
+                    if film_name.find("a") and not href:
+                        href = film_name.find("a").get("href")
+                    title = film_name.text.strip("\n")
 
-            fd_infor = film_detail.find("div", class_="fd-infor")
-            fd_infor = fd_infor.text if fd_infor else ""
-            fd_infor = [x for x in fd_infor.split("\n") if x]
+                fd_infor = film_detail.find("div", class_="fd-infor")
+                fd_infor = fd_infor.text if fd_infor else ""
+                fd_infor = [x for x in fd_infor.split("\n") if x]
 
-        if "http" not in href:
-            href = CONFIG.TINYZONETV_HOMEPAGE + href
+            if "http" not in href:
+                href = CONFIG.TINYZONETV_HOMEPAGE + href
 
-        film_data, episodes_data = self.crawl_film(
-            title=title,
-            fd_infor=fd_infor,
-            quality=quality,
-            cover_src=cover_src,
-            href=href,
-            post_type=post_type,
-        )
+            film_data, episodes_data = self.crawl_film(
+                title=title,
+                fd_infor=fd_infor,
+                quality=quality,
+                cover_src=cover_src,
+                href=href,
+                post_type=post_type,
+            )
 
-        # film_data["episodes_data"] = episodes_data
+            # film_data["episodes_data"] = episodes_data
 
-        # with open("json/crawled.json", "w") as f:
-        #     f.write(json.dumps(film_data, indent=4, ensure_ascii=False))
+            # with open("json/crawled.json", "w") as f:
+            #     f.write(json.dumps(film_data, indent=4, ensure_ascii=False))
 
-        PsyPlay(film=film_data, episodes=episodes_data).insert_film()
-        # sys.exit(0)
+            PsyPlay(film=film_data, episodes=episodes_data).insert_film()
+            # sys.exit(0)
+        except Exception as e:
+            helper.error_log(
+                msg=f"Error crawl_flw_item\n{e}", log_file="base.crawl_flw_item.log"
+            )
 
     def crawl_page(self, url, post_type: str = CONFIG.TYPE_TV_SHOWS):
         soup = self.crawl_soup(url)

@@ -17,7 +17,7 @@ if __name__ == "__main__":
                 post_type=CONFIG.TYPE_MOVIE,
             )
             if not crawled_page and i >= CONFIG.TINYZONETV_MOVIES_LAST_PAGE:
-                i = 2
+                i = 1
             else:
                 i += 1
         except Exception as e:
