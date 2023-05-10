@@ -42,7 +42,7 @@ class PsyPlay:
         helper.insert_postmeta(postmeta_data)
 
     def insert_root_film(self) -> list:
-        condition_post_name = slugify(self.film["post_title"])
+        condition_post_name = self.film["slug"]
         condition = f"""post_name = '{condition_post_name}' AND post_type='{self.film["post_type"]}'"""
         be_post = database.select_all_from(
             table=f"{CONFIG.TABLE_PREFIX}posts", condition=condition
@@ -51,6 +51,7 @@ class PsyPlay:
             logging.info(f'Inserting root film: {self.film["post_title"]}')
             post_data = helper.generate_film_data(
                 self.film["post_title"],
+                self.film["slug"],
                 self.film["description"],
                 self.film["post_type"],
                 self.film["trailer_id"],
@@ -73,8 +74,14 @@ class PsyPlay:
                 + f" - Episode {episode_number}"
             )
 
-            condition_episode_name = slugify(episode_title)
-            condition = f'post_name = "{condition_episode_name}"'
+            episode_slug = (
+                self.film["slug"]
+                + f' - Season {self.film["season_number"]}: '
+                + f" - Episode {episode_number}"
+            )
+
+            episode_slug = slugify(episode_slug)
+            condition = f'post_name = "{episode_slug}"'
             be_post = database.select_all_from(
                 table=f"{CONFIG.TABLE_PREFIX}posts", condition=condition
             )
@@ -86,6 +93,7 @@ class PsyPlay:
             episode_data = helper.generate_episode_data(
                 post_id,
                 episode_title,
+                episode_slug,
                 self.film["season_number"],
                 episode_number,
                 self.film["post_title"],

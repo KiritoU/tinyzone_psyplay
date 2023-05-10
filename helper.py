@@ -228,6 +228,7 @@ class Helper:
     def generate_film_data(
         self,
         title,
+        slug,
         description,
         post_type,
         trailer_id,
@@ -237,6 +238,7 @@ class Helper:
         post_data = {
             "description": description,
             "title": title,
+            "slug": slug,
             "post_type": post_type,
             # "id": "202302",
             "youtube_id": f"[{trailer_id}]",
@@ -279,6 +281,7 @@ class Helper:
         self,
         post_id,
         episode_name,
+        episode_slug,
         season_number,
         episode_number,
         post_title,
@@ -292,6 +295,7 @@ class Helper:
         episode_data = {
             "post_id": post_id,
             "title": episode_name,
+            "slug": episode_slug,
             "description": CONFIG.EPISODE_DEFAULT_DESCRIPTION.format(post_title),
             "post_type": "episodes",
             # "ids": "202302",
@@ -362,7 +366,7 @@ class Helper:
             "open",
             "closed",
             "",
-            slugify(self.format_slug(post_data["title"])),
+            post_data["slug"],
             "",
             "",
             timeupdate.strftime("%Y/%m/%d %H:%M:%S"),
@@ -541,7 +545,7 @@ class Helper:
             (
                 episode_data["post_id"],
                 f"{temporadas_episodios}_slug",
-                slugify(self.format_slug(episode_data["title"])),
+                episode_data["slug"],
             ),
             (
                 episode_data["post_id"],
